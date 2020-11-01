@@ -6,7 +6,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def calc_participation_rate(user_id, new_user_participation_prob=0.5):
+from typing import List
+IdList = List[str]
+
+
+def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0.5) -> float:
 
     user_url = f'https://connpass.com/user/{user_id}/'
     r = requests.get(user_url)
@@ -55,7 +59,7 @@ def calc_participation_rate(user_id, new_user_participation_prob=0.5):
     return participation_rate
 
 
-def get_participants_id_list(event_url):
+def get_participants_id_list(event_url: str) -> IdList:
 
     participants_url = f'{event_url}/participation'
 
