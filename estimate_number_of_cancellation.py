@@ -91,7 +91,7 @@ def get_participants_id_list(event_url: str) -> IdList:
 
     # ユーザ一覧のテーブルからユーザidを取得
     participants_id_list = []
-    for participation_table_list in soup.select('.participation_table_area'):
+    for participation_table_list in soup.select('.applicant_area .participation_table_area'):
         for participating_user in participation_table_list.select('.user'):
             user_url = participating_user.select('.display_name a')[0]['href']
             m = re.match('https://connpass.com/user/(.*)/', user_url)
