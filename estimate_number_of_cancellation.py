@@ -24,12 +24,14 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
     r = requests.get(user_url)
     soup = BeautifulSoup(r.text, 'html.parser')
 
+    # イベントのテーブル部分を取得
     participating_total_num = int(
         soup.select('.square_tab .num')[0].get_text())
 
     if participating_total_num == 0:
         return new_user_participation_prob
 
+    # connpassはユーザページにはイベントを10件ずつしか表示しないので、ページ数を予め取得する必要がある
     page_total_num = math.ceil(participating_total_num / 10.)
 
     total_register_num = 0
@@ -37,22 +39,27 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
 
     for page_idx in range(1, page_total_num + 1):
         if page_idx > 1:
+            # 2ページ目以降はリクエストを送る間隔を設ける
             time.sleep(1)
             user_url = f'https://connpass.com/user/{user_id}/?page={page_idx}'
             r = requests.get(user_url)
             soup = BeautifulSoup(r.text, 'html.parser')
 
+        # ページごとのユーザのイベントの参加状況を収集する
         results = soup.select('div.event_area .event_list')
         for result in results:
-            result2 = result.select('.event_thumbnail .label_status_event')
+            event_status = result.select(
+                '.event_thumbnail .label_status_event')
 
-            if result2[0].get_text() == '終了':
+            # イベントの開催がすでに終わっているもののみカウントする
+            if event_status[0].get_text() == '終了':
+                # ユーザの参加状況を取得
                 participate_status = result.select(
                     '.label_status_tag')[0].get_text()
 
+                # 補欠のまま終了したイベントは参加イベントとしてノーカウント
                 if participate_status == '補欠':
                     continue
-
                 total_register_num += 1
 
                 if participate_status == 'キャンセル':
@@ -76,13 +83,14 @@ def get_participants_id_list(event_url: str) -> IdList:
     Returns:
         IdList: ユーザidのリスト
     """
-    participants_url = f'{event_url}/participation'
 
+    # 申込みをしたユーザのページを取得
+    participants_url = f'{event_url}/participation'
     r = requests.get(participants_url)
     soup = BeautifulSoup(r.text, 'html.parser')
 
+    # ユーザ一覧のテーブルからユーザidを取得
     participants_id_list = []
-
     for participation_table_list in soup.select('.participation_table_area'):
         for participating_user in participation_table_list.select('.user'):
             user_url = participating_user.select('.display_name a')[0]['href']
@@ -98,6 +106,7 @@ def get_participants_id_list(event_url: str) -> IdList:
 
 if __name__ == '__main__':
     import sys
+
     participants_id_list = get_participants_id_list(sys.argv[1])
     print('イベントに参加予定のユーザIDリスト')
     print(participants_id_list)
