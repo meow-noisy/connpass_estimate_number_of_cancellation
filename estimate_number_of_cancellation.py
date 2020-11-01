@@ -62,7 +62,7 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
 
     participation_rate = participate_num / total_register_num
 
-    print(user_id, participation_rate, participate_num, total_register_num)
+    print(f"ユーザID: {user_id}, 参加確率: {participation_rate}, 参加回数: {participate_num}, イベント申し込み数: {total_register_num}")
 
     return participation_rate
 
@@ -99,13 +99,17 @@ def get_participants_id_list(event_url: str) -> IdList:
 if __name__ == '__main__':
     import sys
     participants_id_list = get_participants_id_list(sys.argv[1])
+    print('イベントに参加予定のユーザIDリスト')
+    print(participants_id_list)
+    print()
 
     candidate_num = len(participants_id_list)
-
     sum_rate = 0
-    print(participants_id_list)
+    print(f"全{candidate_num}ユーザー分の参加確率を算出中...")
     for participants_id in participants_id_list:
         rate = calc_participation_rate(participants_id)
         sum_rate += rate
+    print()
 
-    print(candidate_num - sum_rate, candidate_num, sum_rate)
+    print(
+        f"見積もったキャンセル人数: {candidate_num - sum_rate}, 現在の参加登録人数: {candidate_num}, 現在の参加人数の期待値:{sum_rate}")
