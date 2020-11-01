@@ -11,7 +11,15 @@ IdList = List[str]
 
 
 def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0.5) -> float:
+    """イベント参加予定者の過去のイベントに実際に参加した割合を求め、参加確率とする
 
+    Args:
+        user_id (str): ユーザid
+        new_user_participation_prob (float, optional): 新規ユーザの場合の確率. Defaults to 0.5.
+
+    Returns:
+        float: イベント参加確率
+    """
     user_url = f'https://connpass.com/user/{user_id}/'
     r = requests.get(user_url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -60,7 +68,14 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
 
 
 def get_participants_id_list(event_url: str) -> IdList:
+    """イベント参加予定者のユーザidのリストを取得
 
+    Args:
+        event_url (str): イベントページのURL
+
+    Returns:
+        IdList: ユーザidのリスト
+    """
     participants_url = f'{event_url}/participation'
 
     r = requests.get(participants_url)
