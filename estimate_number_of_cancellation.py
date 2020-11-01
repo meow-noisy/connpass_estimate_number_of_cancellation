@@ -113,6 +113,10 @@ if __name__ == '__main__':
     print()
 
     candidate_num = len(participants_id_list)
+    if candidate_num > 100:
+        print("予定参加者数が100名を超える場合に不具合が起きるため処理を中断します。申し訳ございません。", file=sys.stderr)
+        sys.exit(1)
+
     sum_rate = 0
     print(f"全{candidate_num}ユーザー分の参加確率を算出中...")
     for participants_id in participants_id_list:
