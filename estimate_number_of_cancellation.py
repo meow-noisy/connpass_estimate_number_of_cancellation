@@ -28,9 +28,6 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
     participating_total_num = int(
         soup.select('.square_tab .num')[0].get_text())
 
-    if participating_total_num == 0:
-        return new_user_participation_prob
-
     # connpassはユーザページにはイベントを10件ずつしか表示しないので、ページ数を予め取得する必要がある
     page_total_num = math.ceil(participating_total_num / 10.)
 
@@ -67,7 +64,10 @@ def calc_participation_rate(user_id: str, new_user_participation_prob: float = 0
                 else:
                     participate_num += 1
 
-    participation_rate = participate_num / total_register_num
+    if total_register_num == 0:
+        participation_rate = new_user_participation_prob
+    else:
+        participation_rate = participate_num / total_register_num
 
     print(f"ユーザID: {user_id}, 参加確率: {participation_rate}, 参加回数: {participate_num}, イベント申し込み数: {total_register_num}")
 
